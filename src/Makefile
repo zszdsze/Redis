@@ -19,9 +19,9 @@ CLANG := $(findstring clang,$(shell sh -c '$(CC) --version | head -1'))
 OPTIMIZATION?=-O3
 ifeq ($(OPTIMIZATION),-O3)
 	ifeq (clang,$(CLANG))
-		REDIS_CFLAGS+=-flto
+		REDIS_CFLAGS+= -pg -flto
 	else
-		REDIS_CFLAGS+=-flto=auto
+		REDIS_CFLAGS+= -pg -flto=auto
 	endif
 	REDIS_LDFLAGS+=-O3 -flto
 endif
@@ -29,7 +29,7 @@ DEPENDENCY_TARGETS=hiredis linenoise lua hdr_histogram fpconv
 NODEPS:=clean distclean
 
 # Default settings
-STD=-pedantic -DREDIS_STATIC=''
+STD=-pg -pedantic -DREDIS_STATIC=''
 
 # Use -Wno-c11-extensions on clang, either where explicitly used or on
 # platforms we can assume it's being used.
@@ -40,7 +40,7 @@ ifneq (,$(findstring FreeBSD,$(uname_S)))
   STD+=-Wno-c11-extensions
 endif
 endif
-WARN=-Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes
+WARN=-pg -Wall -W -Wno-missing-field-initializers -Werror=deprecated-declarations -Wstrict-prototypes
 OPT=$(OPTIMIZATION)
 
 # Detect if the compiler supports C11 _Atomic.
@@ -72,7 +72,7 @@ endif
 
 # To get ARM stack traces if Redis crashes we need a special C flag.
 ifneq (,$(filter aarch64 armv%,$(uname_M)))
-        CFLAGS+=-funwind-tables
+        CFLAGS+= -pg -funwind-tables
 endif
 
 # Backwards compatibility for selecting an allocator
@@ -95,17 +95,17 @@ endif
 ifdef SANITIZER
 ifeq ($(SANITIZER),address)
 	MALLOC=libc
-	CFLAGS+=-fsanitize=address -fno-sanitize-recover=all -fno-omit-frame-pointer
-	LDFLAGS+=-fsanitize=address
+	CFLAGS+=-pg -fsanitize=address -fno-sanitize-recover=all -fno-omit-frame-pointer
+	LDFLAGS+=-pg -fsanitize=address
 else
 ifeq ($(SANITIZER),undefined)
 	MALLOC=libc
-	CFLAGS+=-fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer
-	LDFLAGS+=-fsanitize=undefined
+	CFLAGS+=-pg -fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer
+	LDFLAGS+=-pg -fsanitize=undefined
 else
 ifeq ($(SANITIZER),thread)
-	CFLAGS+=-fsanitize=thread -fno-sanitize-recover=all -fno-omit-frame-pointer
-	LDFLAGS+=-fsanitize=thread
+	CFLAGS+=-pg -fsanitize=thread -fno-sanitize-recover=all -fno-omit-frame-pointer
+	LDFLAGS+=-pg -fsanitize=thread
 else
     $(error "unknown sanitizer=${SANITIZER}")
 endif
@@ -129,10 +129,10 @@ endif
 ifeq ($(uname_S),SunOS)
 	# SunOS
 	ifeq ($(findstring -m32,$(FINAL_CFLAGS)),)
-		CFLAGS+=-m64
+		CFLAGS+=-pg -m64
 	endif
 	ifeq ($(findstring -m32,$(FINAL_LDFLAGS)),)
-		LDFLAGS+=-m64
+		LDFLAGS+=-pg -m64
 	endif
 	DEBUG=-g
 	DEBUG_FLAGS=-g
@@ -256,21 +256,21 @@ ifeq ($(BUILD_WITH_SYSTEMD),yes)
 endif
 
 ifeq ($(MALLOC),tcmalloc)
-	FINAL_CFLAGS+= -DUSE_TCMALLOC
-	FINAL_LIBS+= -ltcmalloc
+	FINAL_CFLAGS+= -pg -DUSE_TCMALLOC
+	FINAL_LIBS+= -pg -ltcmalloc
 endif
 
 ifeq ($(MALLOC),tcmalloc_minimal)
-	FINAL_CFLAGS+= -DUSE_TCMALLOC
-	FINAL_LIBS+= -ltcmalloc_minimal
+	FINAL_CFLAGS+= -pg -DUSE_TCMALLOC
+	FINAL_LIBS+= -pg -ltcmalloc_minimal
 endif
 
 ifeq ($(MALLOC),jemalloc)
-	DEPENDENCY_TARGETS+= jemalloc
-	FINAL_CFLAGS+= -DUSE_JEMALLOC -I../deps/jemalloc/include
-	FINAL_LIBS := ../deps/jemalloc/lib/libjemalloc.a $(FINAL_LIBS)
+	DEPENDENCY_TARGETS+= -pg jemalloc
+	FINAL_CFLAGS+= -pg -DUSE_JEMALLOC -I../deps/jemalloc/include
+	FINAL_LIBS := -pg ../deps/jemalloc/lib/libjemalloc.a $(FINAL_LIBS)
 endif
-
+MALLOC+=-pg
 # LIBSSL & LIBCRYPTO
 LIBSSL_LIBS=
 LIBSSL_PKGCONFIG := $(shell $(PKG_CONFIG) --exists libssl && echo $$?)
