@@ -1,0 +1,13 @@
+SESS timestamp=164766.325669817 pid=1032989 sid=2cf8ba8f2721c1bb exename="/usr/local/bin/redis-server"
+TASK timestamp=164766.325738568 tid=1032989 pid=1032989
+FORK timestamp=164766.344637551 pid=1032994 ppid=1032989
+DLOP timestamp=164766.356613312 tid=1032989 sid=2cf8ba8f2721c1bb base=ffff9ad3c000 libname="/home/zhuoershao/Documents/RedisGraph/bin/linux-arm64v8-release/src/redisgraph.so"
+DLOP timestamp=164766.356613312 tid=1032989 sid=2cf8ba8f2721c1bb base=ffff9acee000 libname="/lib/aarch64-linux-gnu/libgomp.so.1"
+TASK timestamp=164766.384041446 tid=1032999 pid=1032989
+TASK timestamp=164766.384076529 tid=1032997 pid=1032989
+TASK timestamp=164766.384140696 tid=1032998 pid=1032989
+TASK timestamp=164766.394772572 tid=1033000 pid=1032989
+TASK timestamp=164766.397907597 tid=1033004 pid=1032989
+TASK timestamp=164766.397944347 tid=1033003 pid=1032989
+TASK timestamp=164766.397973014 tid=1033002 pid=1032989
+TASK timestamp=164766.398006848 tid=1033001 pid=1032989
